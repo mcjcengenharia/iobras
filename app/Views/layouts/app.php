@@ -1,25 +1,54 @@
-﻿<!doctype html>
-<html lang=\"pt-br\">
+﻿<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-  <meta charset=\"utf-8\">
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+  <meta charset="UTF-8">
   <title>iObras</title>
-  <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap via CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class=\"bg-light\">
-  <nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">
-    <div class=\"container\">
-      <a class=\"navbar-brand\" href=\"/\">iObras</a>
-      <div class=\"navbar-nav\">
-        <a class=\"nav-link\" href=\"/reports\">RelatÃ³rios</a>
-      </div>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/iobras/public/">iObras</a>
+
+    <div class="collapse navbar-collapse">
+      <?php if (class_exists('Auth') && Auth::check()): ?>
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/iobras/public/">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/iobras/public/clientes">Clientes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/iobras/public/contratos">Contratos</a>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <span class="nav-link text-white">
+              <?= htmlspecialchars(Auth::user()['name']) ?>
+            </span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/iobras/public/logout">Sair</a>
+          </li>
+        </ul>
+      <?php endif; ?>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <main class=\"container py-4\">
-    <?= \ ?>
-  </main>
 
-  <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\"></script>
+<main class="container mt-4">
+  <?= $__content ?>
+</main>
+
 </body>
 </html>
+

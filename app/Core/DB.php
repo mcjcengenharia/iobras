@@ -1,21 +1,34 @@
 ﻿<?php
-class DB {
-  private static ?PDO \ = null;
 
-  public static function conn(): PDO {
-    if (self::\) return self::\;
+class DB
+{
+    private static ?PDO $pdo = null;
 
-    \System.Management.Automation.Internal.Host.InternalHost = Env::get('DB_HOST','127.0.0.1');
-    \ = Env::get('DB_PORT','3306');
-    \   = Env::get('DB_DATABASE','prd_system');
-    \ = Env::get('DB_USERNAME','root');
-    \ = Env::get('DB_PASSWORD','');
+    public static function conn(): PDO
+    {
+        if (self::$pdo !== null) {
+            return self::$pdo;
+        }
 
-    \ = \"mysql:host=\System.Management.Automation.Internal.Host.InternalHost;port=\;dbname=\;charset=utf8mb4\";
-    self::\ = new PDO(\, \, \, [
-      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-      PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
-    return self::\;
-  }
+        $host = Env::get('DB_HOST', 'localhost');
+        $port = Env::get('DB_PORT', '3306');
+        $db   = Env::get('DB_DATABASE', 'prd_system');
+        $user = Env::get('DB_USERNAME', 'root');
+        $pass = Env::get('DB_PASSWORD', 'radi3035');
+
+        $dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
+
+        self::$pdo = new PDO(
+            $dsn,
+            $user,
+            $pass,
+            [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]
+        );
+
+        return self::$pdo;
+    }
 }
+
