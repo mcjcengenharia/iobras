@@ -1,0 +1,2 @@
+﻿-- install.sql (placeholder)
+-- No prÃ³ximo commit entra o schema completo + views (mÃ³dulos 1â€“7)

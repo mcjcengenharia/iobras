@@ -1,9 +1,18 @@
 # tools/bootstrap.ps1
 $ErrorActionPreference = "Stop"
 
-function Ensure-Dir($p) { if (!(Test-Path $p)) { New-Item -ItemType Directory -Force -Path $p | Out-Null } }
+function Ensure-Dir($p) {
+  if ([string]::IsNullOrWhiteSpace($p)) { return }
+  if (!(Test-Path $p)) {
+    New-Item -ItemType Directory -Force -Path $p | Out-Null
+  }
+}
+
 function Write-File($path, $content) {
-  Ensure-Dir (Split-Path $path -Parent)
+  $parent = Split-Path $path -Parent
+  if (-not [string]::IsNullOrWhiteSpace($parent)) {
+    Ensure-Dir $parent
+  }
   Set-Content -Path $path -Value $content -Encoding UTF8
 }
 
