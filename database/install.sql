@@ -1,14 +1,9 @@
-Set-Content -Path .\database\install.sql -Encoding UTF8 -Value @'
 -- iObras PRD v0.7 (Módulos 1–7)
 -- MySQL 8 / PHP 8.1 / Apache
 
 SET NAMES utf8mb4;
 SET time_zone = "+00:00";
 SET FOREIGN_KEY_CHECKS = 0;
-
--- =========================
--- TABELAS BASE
--- =========================
 
 CREATE TABLE IF NOT EXISTS roles (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -39,10 +34,6 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- =========================
--- MÓDULO 2/3: CLIENTES + CONTRATOS/OBRAS
--- =========================
-
 CREATE TABLE IF NOT EXISTS clients (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(180) NOT NULL,
@@ -69,10 +60,6 @@ CREATE TABLE IF NOT EXISTS contracts (
   CONSTRAINT fk_contracts_client FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- =========================
--- MÓDULO 5: CUSTOS
--- =========================
-
 CREATE TABLE IF NOT EXISTS cost_categories (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(120) NOT NULL UNIQUE,
@@ -97,10 +84,6 @@ CREATE TABLE IF NOT EXISTS work_costs (
   CONSTRAINT fk_wc_category FOREIGN KEY (category_id) REFERENCES cost_categories(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- =========================
--- MÓDULO 6: MEDIÇÕES / RECEITAS
--- =========================
-
 CREATE TABLE IF NOT EXISTS measurements (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   contract_id BIGINT UNSIGNED NOT NULL,
@@ -117,24 +100,16 @@ CREATE TABLE IF NOT EXISTS measurements (
   CONSTRAINT fk_meas_contract FOREIGN KEY (contract_id) REFERENCES contracts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- =========================
--- VIEWS FINANCEIRAS (MÓDULO 7)
--- =========================
-
 DROP VIEW IF EXISTS vw_receita_contrato;
 CREATE VIEW vw_receita_contrato AS
-SELECT
-  m.contract_id,
-  SUM(m.approved_amount) AS receita
+SELECT m.contract_id, SUM(m.approved_amount) AS receita
 FROM measurements m
 WHERE m.status IN ('Aprovada','Faturada','Recebida')
 GROUP BY m.contract_id;
 
 DROP VIEW IF EXISTS vw_despesa_contrato;
 CREATE VIEW vw_despesa_contrato AS
-SELECT
-  wc.contract_id,
-  SUM(wc.amount) AS despesa
+SELECT wc.contract_id, SUM(wc.amount) AS despesa
 FROM work_costs wc
 WHERE wc.status IN ('Aprovado','Pago')
 GROUP BY wc.contract_id;
@@ -153,10 +128,6 @@ JOIN clients cl ON cl.id = c.client_id
 LEFT JOIN vw_receita_contrato r ON r.contract_id = c.id
 LEFT JOIN vw_despesa_contrato d ON d.contract_id = c.id;
 
--- =========================
--- SEED MÍNIMO (roles)
--- (Usuários seed vamos colocar no COMMIT 3)
--- =========================
 INSERT IGNORE INTO roles (id, name) VALUES
   (1,'Administrador'),
   (2,'Gerente'),
@@ -164,4 +135,3 @@ INSERT IGNORE INTO roles (id, name) VALUES
   (4,'Leitor');
 
 SET FOREIGN_KEY_CHECKS = 1;
-'@
